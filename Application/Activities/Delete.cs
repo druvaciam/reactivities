@@ -10,20 +10,13 @@ namespace Application.Activities
 			public Guid Id {get;set;}
 		}
 
-		partial class Handler : IRequestHandler<Command>
+		partial class Handler(DataContext context) : IRequestHandler<Command>
 		{
-			private readonly DataContext _context;
-			
-			public Handler(DataContext context)
+            public async Task Handle(Command request, CancellationToken cancellationToken)
 			{
-				_context = context;
-			}
-			
-			public async Task Handle(Command request, CancellationToken cancellationToken)
-			{
-				var activity = await _context.Activities.FindAsync(request.Id);
-				_context.Remove(activity);
-				await _context.SaveChangesAsync();
+				var activity = await context.Activities.FindAsync(request.Id);
+				context.Remove(activity);
+				await context.SaveChangesAsync();
 			}
 		}
 	}
